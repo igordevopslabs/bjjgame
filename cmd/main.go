@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
-
+	"github.com/igordevopslabs/bjjgame/config"
+	httpcontroller "github.com/igordevopslabs/bjjgame/internal/http"
 	"github.com/igordevopslabs/bjjgame/pkg"
 )
 
@@ -12,5 +12,13 @@ func init() {
 }
 
 func main() {
-	fmt.Println("Jiu Jitsu game!")
+
+	cfg, err := config.NewConfig()
+	if err != nil {
+		pkg.LogError("Erro ao carregar configs", err)
+	}
+
+	server := httpcontroller.NewServer(cfg)
+	server.Start()
+
 }
