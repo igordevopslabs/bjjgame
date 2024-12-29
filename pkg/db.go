@@ -1,9 +1,8 @@
 package pkg
 
 import (
-	"fmt"
+	"os"
 
-	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -14,13 +13,13 @@ func ConnectToDatabase() {
 
 	var err error
 
-	db_name := "bjj_db"
-	dsn := fmt.Sprintf("host=localhost user=admin password=admin dbname=%v port=5432 sslmode=disable", db_name)
+	dsn := os.Getenv("DB_CONN_STRING")
+
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		LogError("Erro ao connectar com o banco", err)
 	}
 
-	LogInfo("Connection Ok", zap.String("DB_NAME", db_name))
+	LogInfo("Database connection Ok")
 }
