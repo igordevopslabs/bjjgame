@@ -25,3 +25,5 @@ func (t TechniquesRepoImpl) Create(techniques techniquesmodel.Techniques) {
 	result := t.Db.Create(&techniques)
 	helper.ErrorPanic(result.Error)
 }
+
+//paramos no service
