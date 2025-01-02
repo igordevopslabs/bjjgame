@@ -2,9 +2,6 @@
 
 local:
 	@echo "==> Iniciando a aplicação..."
-	LOG_LEVEL=info \
-	DB_CONN_STRING="host=localhost user=admin password=admin dbname=bjj_db port=5432 sslmode=disable" \
-	HTTP_PORT=3000 \
 	docker-compose up -d && \
 	go run cmd/main.go
 
