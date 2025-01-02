@@ -10,6 +10,7 @@ import (
 
 type IFightersRepo interface {
 	Create(fighters fightersmodel.Fighters)
+	FindAll() []fightersmodel.Fighters
 }
 
 //Definição dos metodos para interagir com a camada de repository
@@ -24,6 +25,15 @@ func NewFighterRepoImpl(Db *gorm.DB) IFightersRepo {
 	return &FightersRepoImpl{Db: Db}
 }
 
+// Lista todos os lutadores
+func (f FightersRepoImpl) FindAll() []fightersmodel.Fighters {
+	var fighters []fightersmodel.Fighters
+	result := f.Db.Find(&fighters)
+	helper.ErrorPanic(result.Error)
+	return fighters
+}
+
+// Cria os lutadores no Repository
 func (f FightersRepoImpl) Create(fighters fightersmodel.Fighters) {
 	result := f.Db.Create(&fighters)
 	helper.ErrorPanic(result.Error)

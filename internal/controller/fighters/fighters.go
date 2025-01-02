@@ -27,6 +27,17 @@ func NewFightersController(svc fightersservice.IFightersService) *FightersContro
 	}
 }
 
+func (c *FightersController) FindAll(ctx *gin.Context) {
+	fighterResponse := c.fighterService.FindAll()
+	webResponse := FightersResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   fighterResponse,
+	}
+	ctx.Header("Content-Type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse)
+}
+
 func (c *FightersController) Create(ctx *gin.Context) {
 	createFighterReq := fightersservice.CreateFightersRequest{}
 	err := ctx.ShouldBindJSON(&createFighterReq)

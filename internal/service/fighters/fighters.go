@@ -14,9 +14,18 @@ type CreateFightersRequest struct {
 	Overall int    `validate:"required" json:"overall"`
 }
 
+type FightersResponse struct {
+	ID      int    `json:"id"`
+	Name    string `json:"name"`
+	Team    string `json:"team"`
+	Style   string `json:"style"`
+	Overall int    `json:"overall"`
+}
+
 // Definição da interface da camanda de serviço
 type IFightersService interface {
 	Create(fighters CreateFightersRequest)
+	FindAll() []FightersResponse
 }
 
 type FightersServiceImpl struct {
@@ -31,6 +40,27 @@ func NewFightersServiceImpl(fighterRepository fightersrepo.IFightersRepo, valida
 		FighterRepository: fighterRepository,
 		Validate:          validate,
 	}
+}
+
+func (f FightersServiceImpl) FindAll() []FightersResponse {
+	//instancia o banco
+	fightersFromRepo := f.FighterRepository.FindAll()
+
+	var fighters []FightersResponse
+
+	for _, value := range fightersFromRepo {
+		fighter := FightersResponse{
+			ID:      value.ID,
+			Name:    value.Name,
+			Team:    value.Team,
+			Style:   value.Style,
+			Overall: value.Overall,
+		}
+		fighters = append(fighters, fighter)
+
+	}
+
+	return fighters
 }
 
 func (f FightersServiceImpl) Create(fighters CreateFightersRequest) {
