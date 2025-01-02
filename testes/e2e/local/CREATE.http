@@ -1,0 +1,20 @@
+### Criar um novo lutador
+POST http://localhost:3000/api/fighters/
+Content-Type: application/json
+
+{
+  "name": "Icaro Silva",
+  "team": "Rayan Gracie",
+  "style": "Passador",
+  "overall": 53
+}
+
+### Criar uma nova tecnica
+POST http://localhost:3000/api/techniques/
+Content-Type: application/json
+
+{
+  "name": "Leandro Lo's Baiana",
+  "type": "Takedown",
+  "points": 100
+}

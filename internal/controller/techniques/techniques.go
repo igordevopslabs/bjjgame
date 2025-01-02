@@ -39,7 +39,7 @@ func (t TechniquesController) Create(ctx *gin.Context) {
 	response := TechniquesResponse{
 		Code:   200,
 		Status: "Ok",
-		Data:   nil,
+		Data:   createTechniquesReq,
 	}
 
 	ctx.JSON(http.StatusOK, response)
