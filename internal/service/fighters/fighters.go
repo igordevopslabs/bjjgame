@@ -1,6 +1,8 @@
 package fightersservice
 
 import (
+	"fmt"
+
 	"github.com/go-playground/validator/v10"
 	fightersmodel "github.com/igordevopslabs/bjjgame/internal/model/fighters"
 	fightersrepo "github.com/igordevopslabs/bjjgame/internal/repository/fighters"
@@ -26,6 +28,7 @@ type FightersResponse struct {
 type IFightersService interface {
 	Create(fighters CreateFightersRequest)
 	FindAll() []FightersResponse
+	FightersOverallCompare(id1, id2 int) (string, error)
 }
 
 type FightersServiceImpl struct {
@@ -61,6 +64,31 @@ func (f FightersServiceImpl) FindAll() []FightersResponse {
 	}
 
 	return fighters
+}
+
+func (f FightersServiceImpl) FightersOverallCompare(id1, id2 int) (string, error) {
+	//buscar os lutadores retornados atraves do repository
+	fighters, err := f.FighterRepository.FindFIghtersById([]int{id1, id2})
+	if err != nil {
+		return "", err
+	}
+
+	//verifica se existe os dois ids
+	if len(fighters) != 2 {
+		return "", fmt.Errorf("to have a fight, needs two different fighters")
+	}
+
+	//fazer a comparação dos ids.
+	fighter1 := fighters[0]
+	fighter2 := fighters[1]
+
+	if fighter1.Overall > fighter2.Overall {
+		return fmt.Sprintf("'%s' Overall:'%d' Wins '%s' Overall:'%d", fighter1.Name, fighter1.Overall, fighter2.Name, fighter2.Overall), nil
+	} else if fighter2.Overall > fighter1.Overall {
+		return fmt.Sprintf("'%s' Overall:'%d' Wins '%s' Overall:'%d", fighter2.Name, fighter2.Overall, fighter1.Name, fighter1.Overall), nil
+	} else {
+		return "Draw", nil
+	}
 }
 
 func (f FightersServiceImpl) Create(fighters CreateFightersRequest) {

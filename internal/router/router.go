@@ -29,6 +29,7 @@ func NewRouter(fightersController *fighterscontroller.FightersController, techni
 	{
 		fighterRoutes.POST("/", fightersController.Create)
 		fighterRoutes.GET("/all", fightersController.FindAll)
+		fighterRoutes.GET("/fight/:id1/:id2", fightersController.FightersCompare)
 	}
 	//Techniques Route
 	techniqueRoutes := router.Group("/api/techniques")

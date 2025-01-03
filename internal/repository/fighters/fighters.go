@@ -11,6 +11,7 @@ import (
 type IFightersRepo interface {
 	Create(fighters fightersmodel.Fighters)
 	FindAll() []fightersmodel.Fighters
+	FindFIghtersById(ids []int) ([]fightersmodel.Fighters, error)
 }
 
 //Definição dos metodos para interagir com a camada de repository
@@ -31,6 +32,16 @@ func (f FightersRepoImpl) FindAll() []fightersmodel.Fighters {
 	result := f.Db.Find(&fighters)
 	helper.ErrorPanic(result.Error)
 	return fighters
+}
+
+// busca um par de lutadores no banco
+func (f FightersRepoImpl) FindFIghtersById(ids []int) ([]fightersmodel.Fighters, error) {
+	var fighters []fightersmodel.Fighters
+	result := f.Db.Where("id in ?", ids).Find(&fighters)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return fighters, result.Error
 }
 
 // Cria os lutadores no Repository

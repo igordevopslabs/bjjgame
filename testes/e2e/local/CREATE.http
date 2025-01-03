@@ -3,10 +3,10 @@ POST http://localhost:3000/api/fighters/
 Content-Type: application/json
 
 {
-  "name": "Icaro Silva",
-  "team": "Rayan Gracie",
+  "name": "Marcio R",
+  "team": "G13BJJ",
   "style": "Passador",
-  "overall": 53
+  "overall": 10
 }
 
 ### Criar uma nova tecnica
