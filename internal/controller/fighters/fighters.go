@@ -39,6 +39,29 @@ func (c *FightersController) FindAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
+func (c *FightersController) FindById(ctx *gin.Context) {
+	idParam := ctx.Param("id")
+
+	id, err := strconv.Atoi(idParam)
+	helper.ErrorPanic(err)
+
+	result, err := c.fighterService.FindById(id)
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error:": err.Error()})
+		return
+	}
+
+	webResponse := FightersResponse{
+		Code:   200,
+		Status: "Ok",
+		Data:   result,
+	}
+
+	ctx.JSON(http.StatusOK, webResponse)
+
+}
+
 func (c *FightersController) FightersCompare(ctx *gin.Context) {
 	//receber os ids via parametro da request
 	idParam1 := ctx.Param("id1")

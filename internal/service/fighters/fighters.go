@@ -29,6 +29,7 @@ type IFightersService interface {
 	Create(fighters CreateFightersRequest)
 	FindAll() []FightersResponse
 	FightersOverallCompare(id1, id2 int) (string, error)
+	FindById(id int) ([]FightersResponse, error)
 }
 
 type FightersServiceImpl struct {
@@ -64,6 +65,34 @@ func (f FightersServiceImpl) FindAll() []FightersResponse {
 	}
 
 	return fighters
+}
+
+func (f FightersServiceImpl) FindById(id int) ([]FightersResponse, error) {
+	//instancia o banco
+	fightersFromRepo, err := f.FighterRepository.FindFIghtersBySingleId(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(fightersFromRepo) != 1 {
+		return nil, fmt.Errorf("at least one fighter must be returned")
+	}
+
+	var fighter []FightersResponse
+
+	for _, value := range fightersFromRepo {
+		fighterAppended := FightersResponse{
+			ID:      value.ID,
+			Name:    value.Name,
+			Team:    value.Team,
+			Style:   value.Style,
+			Overall: value.Overall,
+		}
+		fighter = append(fighter, fighterAppended)
+
+	}
+
+	return fighter, nil
 }
 
 func (f FightersServiceImpl) FightersOverallCompare(id1, id2 int) (string, error) {

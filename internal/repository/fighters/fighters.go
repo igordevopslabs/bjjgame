@@ -1,6 +1,8 @@
 package fightersrepo
 
 import (
+	"errors"
+
 	fightersmodel "github.com/igordevopslabs/bjjgame/internal/model/fighters"
 	"github.com/igordevopslabs/bjjgame/pkg/helper"
 	"gorm.io/gorm"
@@ -12,6 +14,7 @@ type IFightersRepo interface {
 	Create(fighters fightersmodel.Fighters)
 	FindAll() []fightersmodel.Fighters
 	FindFIghtersById(ids []int) ([]fightersmodel.Fighters, error)
+	FindFIghtersBySingleId(id int) ([]fightersmodel.Fighters, error)
 }
 
 //Definição dos metodos para interagir com a camada de repository
@@ -42,6 +45,19 @@ func (f FightersRepoImpl) FindFIghtersById(ids []int) ([]fightersmodel.Fighters,
 		return nil, result.Error
 	}
 	return fighters, result.Error
+}
+
+// busca por um unico ID
+func (f FightersRepoImpl) FindFIghtersBySingleId(id int) ([]fightersmodel.Fighters, error) {
+	var fighters []fightersmodel.Fighters
+	result := f.Db.Find(&fighters, id).Find(&fighters)
+	if result.Error != nil {
+		return nil, result.Error
+	} else if result != nil {
+		return fighters, nil
+	} else {
+		return nil, errors.New("fighter is not found")
+	}
 }
 
 // Cria os lutadores no Repository

@@ -5,3 +5,7 @@ Content-Type: application/json
 ### Luta
 GET http://localhost:3000/api/fighters/fight/2/1
 Content-Type: application/json
+
+### Pesquisa por um lutador
+GET http://localhost:3000/api/fighters/1
+Content-Type: application/json
