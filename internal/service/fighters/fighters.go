@@ -29,7 +29,8 @@ type IFightersService interface {
 	Create(fighters CreateFightersRequest)
 	FindAll() []FightersResponse
 	FightersOverallCompare(id1, id2 int) (string, error)
-	FindById(id int) ([]FightersResponse, error)
+	FindById(id int) (FightersResponse, error)
+	UpdateFighter(fighter fightersrepo.UpdateFightersRepo)
 }
 
 type FightersServiceImpl struct {
@@ -46,7 +47,7 @@ func NewFightersServiceImpl(fighterRepository fightersrepo.IFightersRepo, valida
 	}
 }
 
-func (f FightersServiceImpl) FindAll() []FightersResponse {
+func (f *FightersServiceImpl) FindAll() []FightersResponse {
 	//instancia o banco
 	fightersFromRepo := f.FighterRepository.FindAll()
 
@@ -67,35 +68,31 @@ func (f FightersServiceImpl) FindAll() []FightersResponse {
 	return fighters
 }
 
-func (f FightersServiceImpl) FindById(id int) ([]FightersResponse, error) {
+func (f *FightersServiceImpl) FindById(id int) (FightersResponse, error) {
 	//instancia o banco
 	fightersFromRepo, err := f.FighterRepository.FindFIghtersBySingleId(id)
 	if err != nil {
-		return nil, err
+		return FightersResponse{}, err
 	}
 
-	if len(fightersFromRepo) != 1 {
-		return nil, fmt.Errorf("at least one fighter must be returned")
+	if fightersFromRepo == (fightersmodel.Fighters{}) {
+		fmt.Println(fightersFromRepo)
+		return FightersResponse{}, fmt.Errorf("at least one fighter must be returned")
 	}
 
-	var fighter []FightersResponse
-
-	for _, value := range fightersFromRepo {
-		fighterAppended := FightersResponse{
-			ID:      value.ID,
-			Name:    value.Name,
-			Team:    value.Team,
-			Style:   value.Style,
-			Overall: value.Overall,
-		}
-		fighter = append(fighter, fighterAppended)
-
+	fighterResponse := FightersResponse{
+		ID:      fightersFromRepo.ID,
+		Name:    fightersFromRepo.Name,
+		Team:    fightersFromRepo.Team,
+		Style:   fightersFromRepo.Style,
+		Overall: fightersFromRepo.Overall,
 	}
 
-	return fighter, nil
+	return fighterResponse, nil
+
 }
 
-func (f FightersServiceImpl) FightersOverallCompare(id1, id2 int) (string, error) {
+func (f *FightersServiceImpl) FightersOverallCompare(id1, id2 int) (string, error) {
 	//buscar os lutadores retornados atraves do repository
 	fighters, err := f.FighterRepository.FindFIghtersById([]int{id1, id2})
 	if err != nil {
@@ -120,7 +117,7 @@ func (f FightersServiceImpl) FightersOverallCompare(id1, id2 int) (string, error
 	}
 }
 
-func (f FightersServiceImpl) Create(fighters CreateFightersRequest) {
+func (f *FightersServiceImpl) Create(fighters CreateFightersRequest) {
 	//valida a struc recebida
 	err := f.Validate.Struct(fighters)
 	helper.ErrorPanic(err)
@@ -132,4 +129,27 @@ func (f FightersServiceImpl) Create(fighters CreateFightersRequest) {
 	}
 
 	f.FighterRepository.Create(fighterModel)
+}
+
+func (f *FightersServiceImpl) UpdateFighter(fighter fightersrepo.UpdateFightersRepo) {
+	fighterData, err := f.FighterRepository.FindFIghtersBySingleId(fighter.ID)
+	helper.ErrorPanic(err)
+
+	if fighterData.Name != "" {
+		fighterData.Name = fighter.Name
+	}
+
+	if fighterData.Team != "" {
+		fighterData.Team = fighter.Team
+	}
+
+	if fighterData.Style != "" {
+		fighterData.Style = fighter.Style
+	}
+
+	if fighterData.Overall != 0 {
+		fighterData.Overall = fighter.Overall
+	}
+
+	f.FighterRepository.UpdateFighter(fighterData)
 }

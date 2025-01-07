@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	fightersrepo "github.com/igordevopslabs/bjjgame/internal/repository/fighters"
 	fightersservice "github.com/igordevopslabs/bjjgame/internal/service/fighters"
 	"github.com/igordevopslabs/bjjgame/pkg/helper"
 )
@@ -102,4 +103,28 @@ func (c *FightersController) Create(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 
+}
+
+func (c *FightersController) UpdateFighter(ctx *gin.Context) {
+	updateFighterReq := fightersrepo.UpdateFightersRepo{}
+	err := ctx.ShouldBindJSON(&updateFighterReq)
+
+	helper.ErrorPanic(err)
+	fighterId := ctx.Param("id")
+
+	id, err := strconv.Atoi(fighterId)
+	helper.ErrorPanic(err)
+
+	updateFighterReq.ID = id
+
+	c.fighterService.UpdateFighter(updateFighterReq)
+
+	webResponse := FightersResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   "Data Uptaded",
+	}
+
+	ctx.Header("Content-Type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse)
 }

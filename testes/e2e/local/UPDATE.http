@@ -1,0 +1,7 @@
+### Criar um novo lutador
+PATCH http://localhost:3000/api/fighters/5
+Content-Type: application/json
+
+{
+  "style": "Passador"
+}
