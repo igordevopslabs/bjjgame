@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	fightersmodel "github.com/igordevopslabs/bjjgame/internal/model/fighters"
+	techniquesmodel "github.com/igordevopslabs/bjjgame/internal/model/techniques"
 	"github.com/igordevopslabs/bjjgame/pkg/helper"
 	"gorm.io/gorm"
 )
@@ -29,10 +30,11 @@ type UpdateFightersRepo struct {
 }
 
 type UpdateFighterMatchesRepo struct {
-	ID      int    `json:"id"`
-	Matches int    `json:"matches"`
-	Belt    string `json:"belt"`
-	Overall int    `json:"overall"`
+	ID         int                          `json:"id"`
+	Matches    int                          `json:"matches"`
+	Belt       string                       `json:"belt"`
+	Overall    int                          `json:"overall"`
+	Techniques []techniquesmodel.Techniques `json:"techniques"`
 }
 
 type FightersRepoImpl struct {
@@ -94,10 +96,11 @@ func (f *FightersRepoImpl) UpdateFighter(fighters fightersmodel.Fighters) {
 
 func (f *FightersRepoImpl) UpdateMatches(fighter fightersmodel.Fighters) {
 	updateFighterMatch := UpdateFighterMatchesRepo{
-		ID:      fighter.ID,
-		Matches: fighter.Matches,
-		Belt:    fighter.Belt,
-		Overall: fighter.Overall,
+		ID:         fighter.ID,
+		Matches:    fighter.Matches,
+		Belt:       fighter.Belt,
+		Overall:    fighter.Overall,
+		Techniques: fighter.Techniques,
 	}
 
 	result := f.Db.Model(&fighter).Updates(updateFighterMatch)

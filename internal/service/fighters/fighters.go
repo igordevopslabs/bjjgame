@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	fightersmodel "github.com/igordevopslabs/bjjgame/internal/model/fighters"
+	techniquesmodel "github.com/igordevopslabs/bjjgame/internal/model/techniques"
 	fightersrepo "github.com/igordevopslabs/bjjgame/internal/repository/fighters"
 	"github.com/igordevopslabs/bjjgame/pkg/helper"
 )
@@ -19,13 +20,14 @@ type CreateFightersRequest struct {
 }
 
 type FightersResponse struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Team    string `json:"team"`
-	Style   string `json:"style"`
-	Overall int    `json:"overall"`
-	Matches int    `json:"matches"`
-	Belt    string `json:"belt"`
+	ID         int                          `json:"id"`
+	Name       string                       `json:"name"`
+	Team       string                       `json:"team"`
+	Style      string                       `json:"style"`
+	Overall    int                          `json:"overall"`
+	Matches    int                          `json:"matches"`
+	Belt       string                       `json:"belt"`
+	Techniques []techniquesmodel.Techniques `json:"techniques"`
 }
 
 // Definição da interface da camanda de serviço
@@ -60,13 +62,14 @@ func (f *FightersServiceImpl) FindAll() []FightersResponse {
 
 	for _, value := range fightersFromRepo {
 		fighter := FightersResponse{
-			ID:      value.ID,
-			Name:    value.Name,
-			Team:    value.Team,
-			Style:   value.Style,
-			Overall: value.Overall,
-			Matches: value.Matches,
-			Belt:    value.Belt,
+			ID:         value.ID,
+			Name:       value.Name,
+			Team:       value.Team,
+			Style:      value.Style,
+			Overall:    value.Overall,
+			Matches:    value.Matches,
+			Belt:       value.Belt,
+			Techniques: value.Techniques,
 		}
 		fighters = append(fighters, fighter)
 
@@ -80,11 +83,6 @@ func (f *FightersServiceImpl) FindById(id int) (FightersResponse, error) {
 	fightersFromRepo, err := f.FighterRepository.FindFIghtersBySingleId(id)
 	if err != nil {
 		return FightersResponse{}, err
-	}
-
-	if fightersFromRepo == (fightersmodel.Fighters{}) {
-		fmt.Println(fightersFromRepo)
-		return FightersResponse{}, fmt.Errorf("at least one fighter must be returned")
 	}
 
 	fighterResponse := FightersResponse{
