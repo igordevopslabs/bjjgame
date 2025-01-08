@@ -1,5 +1,5 @@
 ### Lista todos os lutadores
-GET http://localhost:3000/api/fighters/all
+GET http://localhost:3000/api/fighters/
 Content-Type: application/json
 
 ### Luta
@@ -8,4 +8,8 @@ Content-Type: application/json
 
 ### Pesquisa por um lutador
 GET http://localhost:3000/api/fighters/2
+Content-Type: application/json
+
+### Lista todas as tecnicas
+GET http://localhost:3000/api/techniques/
 Content-Type: application/json
