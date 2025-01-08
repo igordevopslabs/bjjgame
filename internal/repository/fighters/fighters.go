@@ -21,11 +21,10 @@ type IFightersRepo interface {
 //Definição dos metodos para interagir com a camada de repository
 
 type UpdateFightersRepo struct {
-	ID      int    `json:"id"`
-	Name    string `json:"name"`
-	Team    string `json:"team"`
-	Style   string `json:"style"`
-	Overall int    `json:"overall"`
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	Team  string `json:"team"`
+	Style string `json:"style"`
 }
 
 type FightersRepoImpl struct {
@@ -75,11 +74,10 @@ func (f *FightersRepoImpl) Create(fighters fightersmodel.Fighters) {
 
 func (f *FightersRepoImpl) UpdateFighter(fighters fightersmodel.Fighters) {
 	updateFighter := UpdateFightersRepo{
-		ID:      fighters.ID,
-		Name:    fighters.Name,
-		Style:   fighters.Style,
-		Team:    fighters.Team,
-		Overall: fighters.Overall,
+		ID:    fighters.ID,
+		Name:  fighters.Name,
+		Style: fighters.Style,
+		Team:  fighters.Team,
 	}
 
 	result := f.Db.Model(&fighters).Updates(updateFighter)

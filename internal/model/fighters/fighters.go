@@ -6,4 +6,6 @@ type Fighters struct {
 	Team    string `json:"team"`
 	Style   string `json:"style"`
 	Overall int    `json:"overall"`
+	Matches int    `json:"matches"`
+	Belt    string `json:"belt"`
 }

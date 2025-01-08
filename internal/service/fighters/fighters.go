@@ -14,6 +14,8 @@ type CreateFightersRequest struct {
 	Team    string `validate:"required,min=1,max=200" json:"team"`
 	Style   string `validate:"required,min=1,max=200" json:"style"`
 	Overall int    `validate:"required" json:"overall"`
+	Matches int    `validate:"required" json:"matches"`
+	Belt    string `validate:"required" json:"belt"`
 }
 
 type FightersResponse struct {
@@ -22,6 +24,8 @@ type FightersResponse struct {
 	Team    string `json:"team"`
 	Style   string `json:"style"`
 	Overall int    `json:"overall"`
+	Matches int    `json:"matches"`
+	Belt    string `json:"belt"`
 }
 
 // Definição da interface da camanda de serviço
@@ -60,6 +64,8 @@ func (f *FightersServiceImpl) FindAll() []FightersResponse {
 			Team:    value.Team,
 			Style:   value.Style,
 			Overall: value.Overall,
+			Matches: value.Matches,
+			Belt:    value.Belt,
 		}
 		fighters = append(fighters, fighter)
 
@@ -86,6 +92,8 @@ func (f *FightersServiceImpl) FindById(id int) (FightersResponse, error) {
 		Team:    fightersFromRepo.Team,
 		Style:   fightersFromRepo.Style,
 		Overall: fightersFromRepo.Overall,
+		Matches: fightersFromRepo.Matches,
+		Belt:    fightersFromRepo.Belt,
 	}
 
 	return fighterResponse, nil
@@ -109,9 +117,9 @@ func (f *FightersServiceImpl) FightersOverallCompare(id1, id2 int) (string, erro
 	fighter2 := fighters[1]
 
 	if fighter1.Overall > fighter2.Overall {
-		return fmt.Sprintf("'%s' Overall:'%d' Wins '%s' Overall:'%d", fighter1.Name, fighter1.Overall, fighter2.Name, fighter2.Overall), nil
+		return fmt.Sprintf("'%s' Faixa: '%s' Overall:'%d' Wins '%s' Faixa: '%s' Overall:'%d", fighter1.Name, fighter1.Belt, fighter1.Overall, fighter2.Name, fighter2.Belt, fighter2.Overall), nil
 	} else if fighter2.Overall > fighter1.Overall {
-		return fmt.Sprintf("'%s' Overall:'%d' Wins '%s' Overall:'%d", fighter2.Name, fighter2.Overall, fighter1.Name, fighter1.Overall), nil
+		return fmt.Sprintf("'%s' Faixa: '%s' Overall:'%d' Wins '%s' Faixa: '%s' Overall:'%d", fighter2.Name, fighter2.Belt, fighter2.Overall, fighter1.Name, fighter1.Belt, fighter1.Overall), nil
 	} else {
 		return "Draw", nil
 	}
@@ -126,6 +134,8 @@ func (f *FightersServiceImpl) Create(fighters CreateFightersRequest) {
 		Team:    fighters.Team,
 		Style:   fighters.Style,
 		Overall: fighters.Overall,
+		Matches: fighters.Matches,
+		Belt:    fighters.Belt,
 	}
 
 	f.FighterRepository.Create(fighterModel)
@@ -145,10 +155,6 @@ func (f *FightersServiceImpl) UpdateFighter(fighter fightersrepo.UpdateFightersR
 
 	if fighterData.Style != "" {
 		fighterData.Style = fighter.Style
-	}
-
-	if fighterData.Overall != 0 {
-		fighterData.Overall = fighter.Overall
 	}
 
 	f.FighterRepository.UpdateFighter(fighterData)
