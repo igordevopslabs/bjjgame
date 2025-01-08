@@ -29,7 +29,7 @@ func NewTechniquesController(svc techniquesservice.ITechniquesService) *Techniqu
 }
 
 // Criar a função Creare Tecniques do Controller
-func (t TechniquesController) Create(ctx *gin.Context) {
+func (t *TechniquesController) Create(ctx *gin.Context) {
 	createTechniquesReq := techniquesservice.CreateTechniquesRequest{}
 	err := ctx.ShouldBindJSON(&createTechniquesReq)
 	helper.ErrorPanic(err)
@@ -43,4 +43,16 @@ func (t TechniquesController) Create(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, response)
+}
+
+func (t *TechniquesController) ListAllTechniques(ctx *gin.Context) {
+	techniquesResponse := t.techniqueService.ListAllTechniques()
+	webResponse := TechniquesResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   techniquesResponse,
+	}
+
+	ctx.Header("Content-Type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse)
 }

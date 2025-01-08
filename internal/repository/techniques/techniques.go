@@ -10,6 +10,7 @@ import (
 
 type ITechniquesRepo interface {
 	Create(techniques techniquesmodel.Techniques)
+	ListAllTechniques() []techniquesmodel.Techniques
 }
 
 type TechniquesRepoImpl struct {
@@ -26,4 +27,9 @@ func (t TechniquesRepoImpl) Create(techniques techniquesmodel.Techniques) {
 	helper.ErrorPanic(result.Error)
 }
 
-//paramos no service
+func (t *TechniquesRepoImpl) ListAllTechniques() []techniquesmodel.Techniques {
+	var techniques []techniquesmodel.Techniques
+	result := t.Db.Find(&techniques)
+	helper.ErrorPanic(result.Error)
+	return techniques
+}

@@ -13,10 +13,18 @@ type CreateTechniquesRequest struct {
 	Points int    `validate:"required" json:"points"`
 }
 
+type TechniquesResponseService struct {
+	ID     int    `json:"id"`
+	Name   string `json:"name"`
+	Type   string `json:"type"`
+	Points int    `json:"points"`
+}
+
 //Definição da interface para techniques service
 
 type ITechniquesService interface {
 	Create(techniques CreateTechniquesRequest)
+	ListAllTechniques() []TechniquesResponseService
 }
 
 type TechniquesServiceImpl struct {
@@ -33,7 +41,7 @@ func NewTechniquesServiceImpl(techniques techniquesrepo.ITechniquesRepo, validat
 	}
 }
 
-func (t TechniquesServiceImpl) Create(techniques CreateTechniquesRequest) {
+func (t *TechniquesServiceImpl) Create(techniques CreateTechniquesRequest) {
 	err := t.Validate.Struct(techniques)
 	helper.ErrorPanic(err)
 
@@ -45,4 +53,26 @@ func (t TechniquesServiceImpl) Create(techniques CreateTechniquesRequest) {
 	}
 
 	t.TechniquesRepository.Create(techniquesModel)
+}
+
+func (t *TechniquesServiceImpl) ListAllTechniques() []TechniquesResponseService {
+	//receber tecnicas do repositorio
+	techniquesFromRepo := t.TechniquesRepository.ListAllTechniques()
+
+	//declarar variavel para ser preenchida com os dados vindos do repositorio
+	var techniques []TechniquesResponseService
+
+	//Fazer a iteração para cada tecnica que for retornada dentro da struct technique model.
+	for _, value := range techniquesFromRepo {
+		technique := TechniquesResponseService{
+			ID:     value.ID,
+			Name:   value.Name,
+			Type:   value.Type,
+			Points: value.Points,
+		}
+
+		techniques = append(techniques, technique)
+	}
+	//retorna a variavel do tipo ResponseService para a camada de controller pode acessar.
+	return techniques
 }
