@@ -16,6 +16,7 @@ type IFightersRepo interface {
 	FindFIghtersById(ids []int) ([]fightersmodel.Fighters, error)
 	FindFIghtersBySingleId(id int) (fightersmodel.Fighters, error)
 	UpdateFighter(fighters fightersmodel.Fighters)
+	UpdateMatches(fighter fightersmodel.Fighters)
 }
 
 //Definição dos metodos para interagir com a camada de repository
@@ -25,6 +26,13 @@ type UpdateFightersRepo struct {
 	Name  string `json:"name"`
 	Team  string `json:"team"`
 	Style string `json:"style"`
+}
+
+type UpdateFighterMatchesRepo struct {
+	ID      int    `json:"id"`
+	Matches int    `json:"matches"`
+	Belt    string `json:"belt"`
+	Overall int    `json:"overall"`
 }
 
 type FightersRepoImpl struct {
@@ -81,5 +89,17 @@ func (f *FightersRepoImpl) UpdateFighter(fighters fightersmodel.Fighters) {
 	}
 
 	result := f.Db.Model(&fighters).Updates(updateFighter)
+	helper.ErrorPanic(result.Error)
+}
+
+func (f *FightersRepoImpl) UpdateMatches(fighter fightersmodel.Fighters) {
+	updateFighterMatch := UpdateFighterMatchesRepo{
+		ID:      fighter.ID,
+		Matches: fighter.Matches,
+		Belt:    fighter.Belt,
+		Overall: fighter.Overall,
+	}
+
+	result := f.Db.Model(&fighter).Updates(updateFighterMatch)
 	helper.ErrorPanic(result.Error)
 }

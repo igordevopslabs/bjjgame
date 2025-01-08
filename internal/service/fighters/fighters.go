@@ -35,6 +35,7 @@ type IFightersService interface {
 	FightersOverallCompare(id1, id2 int) (string, error)
 	FindById(id int) (FightersResponse, error)
 	UpdateFighter(fighter fightersrepo.UpdateFightersRepo)
+	UpdateFighterMatches(fighter fightersrepo.UpdateFighterMatchesRepo)
 }
 
 type FightersServiceImpl struct {
@@ -158,4 +159,45 @@ func (f *FightersServiceImpl) UpdateFighter(fighter fightersrepo.UpdateFightersR
 	}
 
 	f.FighterRepository.UpdateFighter(fighterData)
+}
+
+func (f *FightersServiceImpl) UpdateFighterMatches(fighter fightersrepo.UpdateFighterMatchesRepo) {
+	fighterData, err := f.FighterRepository.FindFIghtersBySingleId(fighter.ID)
+	helper.ErrorPanic(err)
+
+	fighterData.Matches = fighter.Matches
+
+	switch {
+	case fighterData.Matches < 11:
+		fighterData.Overall = 5
+	case fighterData.Matches < 51:
+		fighterData.Overall = 20
+	case fighterData.Matches < 99:
+		fighterData.Overall = 50
+	case fighterData.Matches < 499:
+		fighterData.Overall = 100
+	case fighterData.Matches < 999:
+		fighterData.Overall = 250
+	case fighterData.Matches < 4999:
+		fighterData.Overall = 1000
+	}
+
+	switch {
+	case fighterData.Overall < 50:
+		fighterData.Belt = "Branca"
+	case fighterData.Overall < 100:
+		fighterData.Belt = "Azul"
+	case fighterData.Overall < 150:
+		fighterData.Belt = "Roxa"
+	case fighterData.Overall < 200:
+		fighterData.Belt = "Marrom"
+	case fighterData.Overall > 200:
+		fighterData.Belt = "Preta"
+	case fighterData.Overall > 500:
+		fighterData.Belt = "Coral"
+	case fighterData.Overall >= 1000:
+		fighterData.Belt = "Vermelha"
+	}
+
+	f.FighterRepository.UpdateMatches(fighterData)
 }

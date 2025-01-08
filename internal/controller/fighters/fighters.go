@@ -128,3 +128,27 @@ func (c *FightersController) UpdateFighter(ctx *gin.Context) {
 	ctx.Header("Content-Type", "application/json")
 	ctx.JSON(http.StatusOK, webResponse)
 }
+
+func (c *FightersController) UpdateFighterMatches(ctx *gin.Context) {
+	updateFighterMatchReq := fightersrepo.UpdateFighterMatchesRepo{}
+	err := ctx.ShouldBindJSON(&updateFighterMatchReq)
+
+	helper.ErrorPanic(err)
+	fighterId := ctx.Param("id")
+
+	id, err := strconv.Atoi(fighterId)
+	helper.ErrorPanic(err)
+
+	updateFighterMatchReq.ID = id
+
+	c.fighterService.UpdateFighterMatches(updateFighterMatchReq)
+
+	webResponse := FightersResponse{
+		Code:   http.StatusOK,
+		Status: "Ok",
+		Data:   "Matches Updated",
+	}
+
+	ctx.Header("Content-Type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse)
+}

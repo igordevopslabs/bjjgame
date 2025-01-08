@@ -5,3 +5,11 @@ Content-Type: application/json
 {
   "overall": 1
 }
+
+### Atualiza partidas/rolas/matches
+PATCH http://localhost:3000/api/fighters/matches/1
+Content-Type: application/json
+
+{
+  "matches": 950
+}
