@@ -7,7 +7,7 @@ GET http://localhost:3000/api/fighters/fight/3/1
 Content-Type: application/json
 
 ### Pesquisa por um lutador
-GET http://localhost:3000/api/fighters/2
+GET http://localhost:3000/api/fighters/1
 Content-Type: application/json
 
 ### Lista todas as tecnicas

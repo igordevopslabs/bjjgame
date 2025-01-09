@@ -11,5 +11,4 @@ type Fighters struct {
 	Matches    int                          `json:"matches"`
 	Belt       string                       `json:"belt"`
 	Techniques []techniquesmodel.Techniques `gorm:"foreignKey:FighterID" json:"techniques"` // Relacionamento 1:N
-
 }

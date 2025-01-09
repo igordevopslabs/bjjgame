@@ -14,7 +14,7 @@ POST http://localhost:3000/api/techniques/
 Content-Type: application/json
 
 {
-  "name": "Leandro Lo's Baiana",
-  "type": "Takedown",
-  "points": 100
+  "name": "Gogoplata",
+  "type": "Submit",
+  "points": 99
 }

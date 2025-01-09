@@ -1,7 +1,7 @@
 package fightersrepo
 
 import (
-	"errors"
+	"fmt"
 
 	fightersmodel "github.com/igordevopslabs/bjjgame/internal/model/fighters"
 	techniquesmodel "github.com/igordevopslabs/bjjgame/internal/model/techniques"
@@ -18,6 +18,9 @@ type IFightersRepo interface {
 	FindFIghtersBySingleId(id int) (fightersmodel.Fighters, error)
 	UpdateFighter(fighters fightersmodel.Fighters)
 	UpdateMatches(fighter fightersmodel.Fighters)
+	FindTechniquesByIds(ids []int) ([]techniquesmodel.Techniques, error)
+	FindTechniquesByBelt(belt string) ([]techniquesmodel.Techniques, error)
+	UpdateFighterWithTechniques(fighter fightersmodel.Fighters) error
 }
 
 //Definição dos metodos para interagir com a camada de repository
@@ -30,11 +33,10 @@ type UpdateFightersRepo struct {
 }
 
 type UpdateFighterMatchesRepo struct {
-	ID         int                          `json:"id"`
-	Matches    int                          `json:"matches"`
-	Belt       string                       `json:"belt"`
-	Overall    int                          `json:"overall"`
-	Techniques []techniquesmodel.Techniques `json:"techniques"`
+	ID      int    `json:"id"`
+	Matches int    `json:"matches"`
+	Belt    string `json:"belt"`
+	Overall int    `json:"overall"`
 }
 
 type FightersRepoImpl struct {
@@ -48,7 +50,8 @@ func NewFighterRepoImpl(Db *gorm.DB) IFightersRepo {
 // Lista todos os lutadores
 func (f *FightersRepoImpl) FindAll() []fightersmodel.Fighters {
 	var fighters []fightersmodel.Fighters
-	result := f.Db.Find(&fighters)
+	// Carregar as técnicas associadas com Preload
+	result := f.Db.Preload("Techniques").Find(&fighters)
 	helper.ErrorPanic(result.Error)
 	return fighters
 }
@@ -56,7 +59,7 @@ func (f *FightersRepoImpl) FindAll() []fightersmodel.Fighters {
 // busca um par de lutadores no banco
 func (f *FightersRepoImpl) FindFIghtersById(ids []int) ([]fightersmodel.Fighters, error) {
 	var fighters []fightersmodel.Fighters
-	result := f.Db.Where("id in ?", ids).Find(&fighters)
+	result := f.Db.Preload("Techniques").Where("id in ?", ids).Find(&fighters)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -65,15 +68,13 @@ func (f *FightersRepoImpl) FindFIghtersById(ids []int) ([]fightersmodel.Fighters
 
 // busca por um unico ID
 func (f *FightersRepoImpl) FindFIghtersBySingleId(id int) (fightersmodel.Fighters, error) {
-	var fighters fightersmodel.Fighters
-	result := f.Db.Find(&fighters, id).Find(&fighters)
+	var fighter fightersmodel.Fighters
+	// Carregar as técnicas associadas com Preload
+	result := f.Db.Preload("Techniques").First(&fighter, id)
 	if result.Error != nil {
 		return fightersmodel.Fighters{}, result.Error
-	} else if result != nil {
-		return fighters, nil
-	} else {
-		return fightersmodel.Fighters{}, errors.New("fighter is not found")
 	}
+	return fighter, nil
 }
 
 // Cria os lutadores no Repository
@@ -96,13 +97,62 @@ func (f *FightersRepoImpl) UpdateFighter(fighters fightersmodel.Fighters) {
 
 func (f *FightersRepoImpl) UpdateMatches(fighter fightersmodel.Fighters) {
 	updateFighterMatch := UpdateFighterMatchesRepo{
-		ID:         fighter.ID,
-		Matches:    fighter.Matches,
-		Belt:       fighter.Belt,
-		Overall:    fighter.Overall,
-		Techniques: fighter.Techniques,
+		ID:      fighter.ID,
+		Matches: fighter.Matches,
+		Belt:    fighter.Belt,
+		Overall: fighter.Overall,
 	}
 
 	result := f.Db.Model(&fighter).Updates(updateFighterMatch)
 	helper.ErrorPanic(result.Error)
+}
+
+func (f *FightersRepoImpl) UpdateTechniquesForFighter(fighterId int, techniques []techniquesmodel.Techniques) error {
+	result := f.Db.Model(&fightersmodel.Fighters{ID: fighterId}).Association("Techniques").Replace(techniques)
+	return result
+}
+
+func (f *FightersRepoImpl) FindTechniquesByIds(ids []int) ([]techniquesmodel.Techniques, error) {
+	var techniques []techniquesmodel.Techniques
+	result := f.Db.Where("id IN ?", ids).Find(&techniques)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return techniques, nil
+}
+
+func (f *FightersRepoImpl) FindTechniquesByBelt(belt string) ([]techniquesmodel.Techniques, error) {
+	var techniques []techniquesmodel.Techniques
+	result := f.Db.Where("required_belt = ?", belt).Find(&techniques)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return techniques, nil
+}
+
+func (f *FightersRepoImpl) UpdateFighterWithTechniques(fighter fightersmodel.Fighters) error {
+	// Associar as técnicas ao lutador
+	for i := range fighter.Techniques {
+		fighter.Techniques[i].FighterID = fighter.ID
+	}
+
+	// Log antes de atualizar as associações
+	fmt.Printf("Techniques to associate: %+v\n", fighter.Techniques)
+
+	// Atualizar as associações de técnicas
+	err := f.Db.Model(&fighter).Association("Techniques").Replace(fighter.Techniques)
+	if err != nil {
+		return err
+	}
+
+	// Persistir as alterações do lutador no banco
+	result := f.Db.Save(&fighter)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	// Log após salvar o lutador
+	fmt.Printf("Updated fighter: %+v\n", fighter)
+
+	return nil
 }

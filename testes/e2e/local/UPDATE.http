@@ -7,9 +7,9 @@ Content-Type: application/json
 }
 
 ### Atualiza partidas/rolas/matches
-PATCH http://localhost:3000/api/fighters/matches/5
+PATCH http://localhost:3000/api/fighters/matches/1
 Content-Type: application/json
 
 {
-  "matches": 410
+  "matches": 252
 }

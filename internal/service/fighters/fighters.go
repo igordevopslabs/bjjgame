@@ -160,8 +160,11 @@ func (f *FightersServiceImpl) UpdateFighter(fighter fightersrepo.UpdateFightersR
 }
 
 func (f *FightersServiceImpl) UpdateFighterMatches(fighter fightersrepo.UpdateFighterMatchesRepo) {
+	fmt.Printf("UpdateFighterMatches called with fighter: %+v\n", fighter)
+
 	fighterData, err := f.FighterRepository.FindFIghtersBySingleId(fighter.ID)
 	helper.ErrorPanic(err)
+	fmt.Printf("Fetched fighter data: %+v\n", fighterData)
 
 	fighterData.Matches = fighter.Matches
 
@@ -197,5 +200,21 @@ func (f *FightersServiceImpl) UpdateFighterMatches(fighter fightersrepo.UpdateFi
 		fighterData.Belt = "Vermelha"
 	}
 
-	f.FighterRepository.UpdateMatches(fighterData)
+	fmt.Printf("Fighter's new belt: %s\n", fighterData.Belt)
+
+	//buscar a quantidade de tecnicas permitidas com base na faixa
+	//limit := f.getTechniqueLimitForBelt(fighter.Belt)
+
+	techniques, err := f.FighterRepository.FindTechniquesByBelt(fighterData.Belt)
+	helper.ErrorPanic(err)
+
+	fmt.Printf("Techniques being associated: %+v\n", techniques)
+
+	fighterData.Techniques = techniques
+
+	err = f.FighterRepository.UpdateFighterWithTechniques(fighterData)
+	helper.ErrorPanic(err)
+
+	fmt.Printf("Updated fighter with techniques: %+v\n", fighterData)
+
 }
