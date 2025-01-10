@@ -115,10 +115,15 @@ func (f *FightersServiceImpl) FightersOverallCompare(id1, id2 int) (string, erro
 	fighter1 := fighters[0]
 	fighter2 := fighters[1]
 
-	if fighter1.Overall > fighter2.Overall {
-		return fmt.Sprintf("'%s' Faixa: '%s' Overall:'%d' Wins '%s' Faixa: '%s' Overall:'%d", fighter1.Name, fighter1.Belt, fighter1.Overall, fighter2.Name, fighter2.Belt, fighter2.Overall), nil
-	} else if fighter2.Overall > fighter1.Overall {
-		return fmt.Sprintf("'%s' Faixa: '%s' Overall:'%d' Wins '%s' Faixa: '%s' Overall:'%d", fighter2.Name, fighter2.Belt, fighter2.Overall, fighter1.Name, fighter1.Belt, fighter1.Overall), nil
+	//soma Overall com os pontos
+
+	totalOverallFighter1 := fighter1.Overall + f.SumFighterTechniquesPoints(fighter1.Techniques)
+	totalOverallFighter2 := fighter2.Overall + f.SumFighterTechniquesPoints(fighter2.Techniques)
+
+	if totalOverallFighter1 > totalOverallFighter2 {
+		return fmt.Sprintf("'%s' Faixa: '%s' Overall:'%d' Wins '%s' Faixa: '%s' Overall:'%d", fighter1.Name, fighter1.Belt, totalOverallFighter1, fighter2.Name, fighter2.Belt, totalOverallFighter2), nil
+	} else if totalOverallFighter2 > totalOverallFighter1 {
+		return fmt.Sprintf("'%s' Faixa: '%s' Overall:'%d' Wins '%s' Faixa: '%s' Overall:'%d", fighter2.Name, fighter2.Belt, totalOverallFighter2, fighter1.Name, fighter1.Belt, totalOverallFighter1), nil
 	} else {
 		return "Draw", nil
 	}
@@ -217,4 +222,14 @@ func (f *FightersServiceImpl) UpdateFighterMatches(fighter fightersrepo.UpdateFi
 
 	fmt.Printf("Updated fighter with techniques: %+v\n", fighterData)
 
+}
+
+func (f *FightersServiceImpl) SumFighterTechniquesPoints(techniques []techniquesmodel.Techniques) int {
+	totalPoints := 0
+
+	for _, technique := range techniques {
+		totalPoints += technique.Points
+	}
+
+	return totalPoints
 }
