@@ -115,8 +115,7 @@ func (f *FightersServiceImpl) FightersOverallCompare(id1, id2 int) (string, erro
 	fighter1 := fighters[0]
 	fighter2 := fighters[1]
 
-	//soma Overall com os pontos
-
+	//soma Overall com os pontos das tecnicas
 	totalOverallFighter1 := fighter1.Overall + f.SumFighterTechniquesPoints(fighter1.Techniques)
 	totalOverallFighter2 := fighter2.Overall + f.SumFighterTechniquesPoints(fighter2.Techniques)
 
